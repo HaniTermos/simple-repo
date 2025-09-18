@@ -3,41 +3,40 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Needed for ES modules to get __dirname
+// For ES modules (to replace __dirname)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const server = http.createServer((req, res) => {
-  let filePath = "." + req.url;
-  if (filePath === "./") {
-    filePath = "./index.html";
+  let filePath = "";
+
+  switch (req.url) {
+    case "/":
+      filePath = path.join(__dirname, "index.html");
+      break;
+    case "/about":
+      filePath = path.join(__dirname, "about.html");
+      break;
+    case "/contact-me":
+      filePath = path.join(__dirname, "contact-me.html");
+      break;
+    default:
+      filePath = path.join(__dirname, "404.html");
+      break;
   }
 
-  // Get file extension
-  const extname = path.extname(filePath);
-  let contentType = "text/html";
-
-  switch (extname) {
-    case ".css":
-      contentType = "text/css";
-      break;
-    case ".js":
-      contentType = "text/javascript";
-      break;
-  }
-
-  fs.readFile(path.join(__dirname, filePath), (err, content) => {
+  fs.readFile(filePath, (err, content) => {
     if (err) {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("404 Not Found");
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Server Error");
     } else {
-      res.writeHead(200, { "Content-Type": contentType });
+      res.writeHead(200, { "Content-Type": "text/html" });
       res.end(content, "utf-8");
     }
   });
 });
 
-const PORT = 3000;
+const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
