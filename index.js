@@ -2,6 +2,11 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from 'dotenv';
+dotenv.config();
+
+console.log(process.env.API_KEY);
+
 
 // For ES modules (to replace __dirname)
 const __filename = fileURLToPath(import.meta.url);
